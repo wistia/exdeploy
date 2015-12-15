@@ -167,31 +167,31 @@ defmodule ExdeployTest do
     assert App.deployed?(app2) == false
 
     Project.deploy(ctx[:umbrella])
-    # assert App.deployed?(app1) == true
-    # assert App.deployed?(app2) == true
-    # assert App.running?(app1) == true
-    # assert App.running?(app2) == true
-    # assert App.running_version(app1) == "0.0.1"
-    # assert App.running_version(app2) == "0.0.1"
+    assert App.deployed?(app1) == true
+    assert App.deployed?(app2) == true
+    assert App.running?(app1) == true
+    assert App.running?(app2) == true
+    assert App.running_version(app1) == "0.0.1"
+    assert App.running_version(app2) == "0.0.1"
 
-    # Project.deploy(ctx[:umbrella])
-    # assert App.deployed?(app1) == true
-    # assert App.deployed?(app2) == true
-    # assert App.running?(app1) == true
-    # assert App.running?(app2) == true
-    # assert App.running_version(app1) == "0.0.1"
-    # assert App.running_version(app2) == "0.0.1"
+    Project.deploy(ctx[:umbrella])
+    assert App.deployed?(app1) == true
+    assert App.deployed?(app2) == true
+    assert App.running?(app1) == true
+    assert App.running?(app2) == true
+    assert App.running_version(app1) == "0.0.1"
+    assert App.running_version(app2) == "0.0.1"
 
-    # # build another version - we'll upgrade to it.
-    # use_mix_exs_version(ctx[:umbrella], "0.0.2")
-    # include_cached_rel(ctx[:umbrella], "0.0.2")
+    # build another version - we'll upgrade to it.
+    use_mix_exs_version(ctx[:umbrella], "0.0.2")
+    include_cached_rel(ctx[:umbrella], "0.0.2")
 
-    # Project.deploy(ctx[:umbrella])
-    # assert App.deployed?(app1) == true
-    # assert App.deployed?(app2) == true
-    # assert App.running?(app1) == true
-    # assert App.running?(app2) == true
-    # assert App.running_version(app1) == "0.0.2"
-    # assert App.running_version(app2) == "0.0.2"
+    Project.deploy(ctx[:umbrella])
+    assert App.deployed?(app1) == true
+    assert App.deployed?(app2) == true
+    assert App.running?(app1) == true
+    assert App.running?(app2) == true
+    assert App.running_version(app1) == "0.0.2"
+    assert App.running_version(app2) == "0.0.2"
   end
 end
