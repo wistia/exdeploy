@@ -70,6 +70,10 @@ defmodule Exdeploy.Project do
     end
   end
 
+  def deploy(build_path, deploy_path) do
+    Project.new(build_path, deploy_path) |> deploy
+  end
+
   def build(project) do
     apps(project)
     |> Enum.map(&App.full_build/1)
