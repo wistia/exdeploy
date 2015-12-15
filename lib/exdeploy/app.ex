@@ -55,7 +55,7 @@ defmodule Exdeploy.App do
     args = String.split(cmd, " ")
     env = [{"MIX_ENV", "prod"}] ++ env
     opts = [env: env, cd: app.path, stderr_to_stdout: true] ++ opts
-    Logger.info {env, app.path, "mix", cmd}
+    Logger.info inspect {env, app.path, "mix", cmd}
     {output, exit_status} = System.cmd("mix", args, opts)
     Logger.debug output
     {output, exit_status}

@@ -37,7 +37,9 @@ defmodule Exdeploy.Release do
       Logger.info "#{release.app.name}: Installing a brand new app, starting at version #{release.version}"
       File.mkdir_p(release.app.deploy_path)
       File.cp(release.tarball, "#{release.app.project.deploy_path}/#{release.app.name}.tar.gz")
-      System.cmd("tar", ~w[-xf #{release.tarball}], cd: release.app.deploy_path)
+      Logger.info "cd #{release.app.deploy_path} && tar -xf #{release.tarball}"
+      result = System.cmd("tar", ~w[-xf #{release.tarball}], cd: release.app.deploy_path)
+      Logger.debug inspect(result)
       release |> bin "start"
     else
       raise "Can't install #{inspect release};
