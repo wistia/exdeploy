@@ -1,4 +1,5 @@
 defmodule Exdeploy.Project do
+  require Logger
   alias Exdeploy.Project
   alias Exdeploy.App
   alias Exdeploy.Release
@@ -65,7 +66,7 @@ defmodule Exdeploy.Project do
         App.latest_version(app) > App.current_version(app) ->
           App.latest_release(app) |> Release.upgrade
         true ->
-          IO.puts "#{app.name}: No version change, skipping"
+          Logger.warn "#{app.name}: No version change, skipping"
       end
     end
   end

@@ -1,4 +1,5 @@
 defmodule Exdeploy.App do
+  require Logger
   alias Exdeploy.Project
   alias Exdeploy.Release
   alias Exdeploy.App
@@ -44,9 +45,9 @@ defmodule Exdeploy.App do
     args = String.split(cmd, " ")
     env = [{"MIX_ENV", "prod"}] ++ env
     opts = [env: env, cd: app.path, stderr_to_stdout: true] ++ opts
-    IO.inspect {env, app.path, "mix", cmd}
+    Logger.info {env, app.path, "mix", cmd}
     {output, exit_status} = System.cmd("mix", args, opts)
-    IO.puts output
+    Logger.debug output
     {output, exit_status}
   end
 
@@ -132,10 +133,10 @@ defmodule Exdeploy.App do
       if release = App.current_release(app) do
         release |> Release.bin(cmd)
       else
-        IO.puts "#{app.name}: No releases available, skipping cmd #{cmd}"
+        Logger.warn "#{app.name}: No releases available, skipping cmd #{cmd}"
       end
     else
-      IO.puts "App #{app.name} has never been deployed. Skipping command #{cmd}"
+      Logger.warn "App #{app.name} has never been deployed. Skipping command #{cmd}"
     end
   end
 end

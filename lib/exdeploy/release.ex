@@ -1,4 +1,5 @@
 defmodule Exdeploy.Release do
+  require Logger
   alias Exdeploy.Release
   alias Exdeploy.App
 
@@ -33,7 +34,7 @@ defmodule Exdeploy.Release do
 
   def install(release) do
     if App.current_version(release.app) == nil do
-      IO.puts "#{release.app.name}: Installing a brand new app, starting at version #{release.version}"
+      Logger.info "#{release.app.name}: Installing a brand new app, starting at version #{release.version}"
       File.mkdir_p(release.app.deploy_path)
       File.cp(release.tarball, "#{release.app.project.deploy_path}/#{release.app.name}.tar.gz")
       System.cmd("tar", ~w[-xf #{release.tarball}], cd: release.app.deploy_path)
@@ -50,8 +51,7 @@ defmodule Exdeploy.Release do
       raise "Can't upgrade #{inspect release};
       No version has been deployed yet. Try using install instead."
     else
-      IO.puts "#{release.app.name}: Upgrading from #{App.current_version(release.app)} to #{release.version}"
-      IO.puts "copy #{release.tarball} to #{release.release_dir}/#{release.app.name}.tar.gz"
+      Logger.info "#{release.app.name}: Upgrading from #{App.current_version(release.app)} to #{release.version}"
       File.mkdir_p(release.release_dir)
       File.cp(release.tarball, "#{release.release_dir}/#{release.app.name}.tar.gz")
       release |> bin "upgrade #{release.version}"
@@ -61,19 +61,19 @@ defmodule Exdeploy.Release do
   def bin(release, cmd) do
     bin = "#{release.app.deploy_path}/bin/#{release.app.name}"
     args = String.split(cmd, " ")
-    IO.puts "cd #{release.app.deploy_path} && #{bin} #{cmd}"
-    IO.inspect System.cmd(bin, args, cd: release.app.deploy_path)
-  end
-
-  defp active_path(app) do
-    "#{app.deploy_path}/active"
+    Logger.info "#{bin} #{cmd}"
+    result = System.cmd(bin, args, cd: release.app.deploy_path)
+    Logger.debug inspect(result)
+    result
   end
 
   def extract(%Release{release_dir: release_dir, tarball: tarball}) do
     unless extracted?(release_dir) do
-      IO.puts "Extracting #{tarball} to #{release_dir}"
+      Logger.debug "Extracting #{tarball} to #{release_dir}"
       File.mkdir_p(release_dir)
-      System.cmd("tar", ~w[-xf #{tarball} --directory #{release_dir}])
+      result = System.cmd("tar", ~w[-xf #{tarball} --directory #{release_dir}])
+      Logger.debug inspect(result)
+      result
     end
   end
 

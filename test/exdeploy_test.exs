@@ -2,7 +2,6 @@ defmodule ExdeployTest do
   use ExUnit.Case
   alias Exdeploy.Project
   alias Exdeploy.App
-  alias Exdeploy.Release
 
   doctest Exdeploy
 
@@ -39,6 +38,7 @@ defmodule ExdeployTest do
   end
 
   setup do
+    Logger.configure(level: :error)
     test_proj_dir = "#{System.cwd}/test_projects"
     clear_deploy_folder(test_proj_dir)
 
