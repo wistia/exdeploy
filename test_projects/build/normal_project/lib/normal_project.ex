@@ -1,0 +1,2 @@
+defmodule NormalProject do
+end
