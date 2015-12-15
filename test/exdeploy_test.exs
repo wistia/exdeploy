@@ -156,4 +156,42 @@ defmodule ExdeployTest do
     assert App.running?(app) == true
     assert App.running_version(app) == "0.0.2"
   end
+
+  test "umbrella: first deploy starts app, second deploy upgrades", ctx do
+    include_cached_rel(ctx[:umbrella], "0.0.1")
+
+    [app1, app2] = Project.apps(ctx[:umbrella])
+    assert App.running?(app1) == false
+    assert App.running?(app2) == false
+    assert App.deployed?(app1) == false
+    assert App.deployed?(app2) == false
+
+    Project.deploy(ctx[:umbrella])
+    # assert App.deployed?(app1) == true
+    # assert App.deployed?(app2) == true
+    # assert App.running?(app1) == true
+    # assert App.running?(app2) == true
+    # assert App.running_version(app1) == "0.0.1"
+    # assert App.running_version(app2) == "0.0.1"
+
+    # Project.deploy(ctx[:umbrella])
+    # assert App.deployed?(app1) == true
+    # assert App.deployed?(app2) == true
+    # assert App.running?(app1) == true
+    # assert App.running?(app2) == true
+    # assert App.running_version(app1) == "0.0.1"
+    # assert App.running_version(app2) == "0.0.1"
+
+    # # build another version - we'll upgrade to it.
+    # use_mix_exs_version(ctx[:umbrella], "0.0.2")
+    # include_cached_rel(ctx[:umbrella], "0.0.2")
+
+    # Project.deploy(ctx[:umbrella])
+    # assert App.deployed?(app1) == true
+    # assert App.deployed?(app2) == true
+    # assert App.running?(app1) == true
+    # assert App.running?(app2) == true
+    # assert App.running_version(app1) == "0.0.2"
+    # assert App.running_version(app2) == "0.0.2"
+  end
 end
