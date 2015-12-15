@@ -7,9 +7,11 @@ defmodule Exdeploy.Project do
   defstruct [build_path: nil, deploy_path: nil]
 
   def new(build_path, deploy_path \\ nil) do
+    build_path = Path.expand(build_path)
+    if deploy_path, do: deploy_path = Path.expand(deploy_path)
     %Project{
-      build_path: Path.expand(build_path),
-      deploy_path: Path.expand(deploy_path),
+      build_path: build_path,
+      deploy_path: deploy_path,
     }
   end
 
