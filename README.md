@@ -23,6 +23,9 @@ defp deps do
 end
 ```
 
+At this time, umbrella sub-projects _must_ live in `apps`. Technically we could
+read this from the `mix.exs` file, and will probably do that in the future.
+
 ## Usage
 
 It's expected that you `git clone` this repo onto a box which has Elixir
@@ -33,15 +36,19 @@ Get exdeploy:
     git clone https://github.com/wistia/exdeploy.git
     cd exdeploy
 
-To compile and make a release:
+To make a release:
 
-    mix run -e "Exdeploy.Project.build(\"/my/project/path\", \"/the/deploy/path\")"
+    mix run -e "Exdeploy.build(\"/my/project/path\")"
+
+This will install hex and rebar, fetch deps, compile and make a release with
+`MIX_ENV=prod`.
 
 To upgrade to the latest release:
 
-    mix run -e "Exdeploy.Project.deploy(\"/my/project/path\", \"/the/deploy/path\")"
+    mix run -e "Exdeploy.deploy(\"/my/project/path\", \"/the/deploy/path\")"
 
-When upgrading, the deploy path must exist or the deployment will fail.
+This assumes `/my/project/path` has a `rel` folder created by exrm. If it's
+an umbrella project, then the `rel` folders should exist in the sub-projects.
 
 ## Running tests
 
