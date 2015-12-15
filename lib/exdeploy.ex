@@ -21,4 +21,12 @@ defmodule Exdeploy do
 
   In non-umbrella projects, the project name will be the same as the app name.
   """
+
+  def build(path) do
+    Exdeploy.Project.build(path)
+  end
+
+  def deploy(build_path, deploy_path) do
+    Exdeploy.Project.deploy(build_path, deploy_path)
+  end
 end

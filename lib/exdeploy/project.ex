@@ -6,10 +6,10 @@ defmodule Exdeploy.Project do
 
   defstruct [build_path: nil, deploy_path: nil]
 
-  def new(build_path, deploy_path) do
+  def new(build_path, deploy_path \\ nil) do
     %Project{
-      build_path: build_path,
-      deploy_path: deploy_path,
+      build_path: Path.expand(build_path),
+      deploy_path: Path.expand(deploy_path),
     }
   end
 
@@ -75,9 +75,12 @@ defmodule Exdeploy.Project do
     Project.new(build_path, deploy_path) |> deploy
   end
 
-  def build(project) do
-    apps(project)
-    |> Enum.map(&App.full_build/1)
+  def build(project = %Project{}) do
+    apps(project) |> Enum.map(&App.full_build/1)
+  end
+
+  def build(build_path) do
+    Project.new(build_path) |> build
   end
 
   def clean_rel(project) do
