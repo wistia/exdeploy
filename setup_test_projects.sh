@@ -23,5 +23,5 @@ setup_cached_releases () {
 }
 
 setup_cached_releases "$SCRIPT_DIR/test_projects/build/normal_project"
-setup_cached_releases "$SCRIPT_DIR/test_projects/umbrella_project/apps/sub_project1"
-setup_cached_releases "$SCRIPT_DIR/test_projects/umbrella_project/apps/sub_project2"
+setup_cached_releases "$SCRIPT_DIR/test_projects/build/umbrella_project/apps/sub_project1"
+setup_cached_releases "$SCRIPT_DIR/test_projects/build/umbrella_project/apps/sub_project2"
