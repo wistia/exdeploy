@@ -4,3 +4,6 @@
 erl_crash.dump
 *.ez
 cached_rel
+test_projects/deploy/sub_project1*
+test_projects/deploy/sub_project2*
+test_projects/deploy/normal_project*
