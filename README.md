@@ -43,13 +43,10 @@ When upgrading, the deploy path must exist or the deployment will fail.
 
 ## Running tests
 
-First fetch deps and compile the test projects:
+First fetch deps, compile, and cache releases for our test projects:
 
     sh setup_test_projects.sh
 
 Then the standard:
 
     mix test
-
-They take a while to run because it makes new releases for most specs, which is
-kind of a slow process.

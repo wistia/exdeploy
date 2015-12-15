@@ -14,6 +14,18 @@ defmodule ExdeployTest do
     Enum.each Project.apps(project), &use_mix_exs_version(&1, version)
   end
 
+  def include_cached_rel(app = %App{}, version) do
+    dst_folder = "#{app.path}/rel/#{app.name}/releases/#{version}"
+    src_folder = "#{app.path}/cached_rel/#{app.name}/releases/#{version}"
+    File.rm_rf dst_folder
+    File.mkdir_p dst_folder
+    File.cp_r src_folder, dst_folder
+  end
+
+  def include_cached_rel(project = %Project{}, version) do
+    Enum.each Project.apps(project), &include_cached_rel(&1, version)
+  end
+
   def reset_project_build(project) do
     Project.stop(project)
     Project.clean_rel(project)
@@ -67,7 +79,7 @@ defmodule ExdeployTest do
 
   test "lists all releases in umbrella project", ctx do
     [] = Project.releases(ctx[:umbrella])
-    Project.build(ctx[:umbrella])
+    include_cached_rel(ctx[:umbrella], "0.0.1")
     [rel1, rel2] = Project.releases(ctx[:umbrella])
     assert rel1.version == "0.0.1"
     assert rel2.version == "0.0.1"
@@ -77,7 +89,7 @@ defmodule ExdeployTest do
 
   test "lists all releases in normal project", ctx do
     [] = Project.releases(ctx[:normal])
-    Project.build(ctx[:normal])
+    include_cached_rel(ctx[:normal], "0.0.1")
     [rel1] = Project.releases(ctx[:normal])
     assert rel1.version == "0.0.1"
     assert App.deployed?(rel1.app) == false
@@ -85,12 +97,12 @@ defmodule ExdeployTest do
 
   test "normal: releases change if mix.exs gets a new version", ctx do
     [] = Project.releases(ctx[:normal])
-    Project.build(ctx[:normal])
+    include_cached_rel(ctx[:normal], "0.0.1")
     [rel1] = Project.releases(ctx[:normal])
     assert rel1.version == "0.0.1"
 
     use_mix_exs_version(ctx[:normal], "0.0.2")
-    Project.build(ctx[:normal])
+    include_cached_rel(ctx[:normal], "0.0.2")
     [rel1, rel2] = Project.releases(ctx[:normal])
     assert rel1.version == "0.0.1"
     assert rel1.app.name == "normal_project"
@@ -100,13 +112,13 @@ defmodule ExdeployTest do
 
   test "umbrella: releases change if mix.exs gets a new version", ctx do
     [] = Project.releases(ctx[:umbrella])
-    Project.build(ctx[:umbrella])
+    include_cached_rel(ctx[:umbrella], "0.0.1")
     [rel1, rel2] = Project.releases(ctx[:umbrella])
     assert rel1.version == "0.0.1"
     assert rel2.version == "0.0.1"
 
     use_mix_exs_version(ctx[:umbrella], "0.0.2")
-    Project.build(ctx[:umbrella])
+    include_cached_rel(ctx[:umbrella], "0.0.2")
     [rel1, rel2, rel3, rel4] = Project.releases(ctx[:umbrella])
     assert rel1.version == "0.0.1"
     assert rel1.app.name == "sub_project1"
@@ -119,7 +131,7 @@ defmodule ExdeployTest do
   end
 
   test "normal: first deploy starts app, second deploy upgrades", ctx do
-    Project.build(ctx[:normal])
+    include_cached_rel(ctx[:normal], "0.0.1")
 
     [app] = Project.apps(ctx[:normal])
     assert App.running?(app) == false
@@ -137,7 +149,7 @@ defmodule ExdeployTest do
 
     # build another version - we'll upgrade to it.
     use_mix_exs_version(ctx[:normal], "0.0.2")
-    Project.build(ctx[:normal])
+    include_cached_rel(ctx[:normal], "0.0.2")
 
     Project.deploy(ctx[:normal])
     assert App.deployed?(app) == true
