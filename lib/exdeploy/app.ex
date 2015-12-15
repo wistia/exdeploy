@@ -16,6 +16,8 @@ defmodule Exdeploy.App do
   end
 
   def full_build(app) do
+    install_hex(app)
+    install_rebar(app)
     deps_get(app)
     compile(app)
     build(app)
@@ -31,6 +33,14 @@ defmodule Exdeploy.App do
 
   def release_clean(app) do
     mix app, "release.clean"
+  end
+
+  def install_hex(app) do
+    mix app, "local.hex --force"
+  end
+
+  def install_rebar(app) do
+    mix app, "local.rebar --force"
   end
 
   def release_clean_implode(app) do
