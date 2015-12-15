@@ -1,5 +1,7 @@
 # Exdeploy
 
+[![Build Status](https://travis-ci.org/wistia/exdeploy.svg?branch=master)](https://travis-ci.org/wistia/exdeploy)
+
 [Exrm](https://github.com/bitwalker/exrm) does a great job of creating
 standalone packages that can be built once and upgraded/downgraded seamlessly.
 But the process of moving the packages into place and installing/upgrading is

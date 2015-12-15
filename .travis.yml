@@ -11,4 +11,3 @@ before_script:
   - sh setup_test_projects.sh
 
 script: mix test
-
