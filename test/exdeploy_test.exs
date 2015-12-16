@@ -77,6 +77,22 @@ defmodule ExdeployTest do
     assert App.deployed?(app3) == false
   end
 
+  test "builds a normal project", ctx do
+    [app] = Project.apps(ctx[:normal])
+    assert File.exists?("#{app.path}/rel/normal_project/releases/0.0.1/normal_project.tar.gz") == false
+    Project.build(ctx[:normal])
+    assert File.exists?("#{app.path}/rel/normal_project/releases/0.0.1/normal_project.tar.gz") == true
+  end
+
+  test "builds an umbrella project", ctx do
+    [app1, app2] = Project.apps(ctx[:umbrella])
+    assert File.exists?("#{app1.path}/rel/sub_project1/releases/0.0.1/sub_project1.tar.gz") == false
+    assert File.exists?("#{app2.path}/rel/sub_project2/releases/0.0.1/sub_project2.tar.gz") == false
+    Project.build(ctx[:umbrella])
+    assert File.exists?("#{app1.path}/rel/sub_project1/releases/0.0.1/sub_project1.tar.gz") == true
+    assert File.exists?("#{app2.path}/rel/sub_project2/releases/0.0.1/sub_project2.tar.gz") == true
+  end
+
   test "lists all releases in umbrella project", ctx do
     [] = Project.releases(ctx[:umbrella])
     include_cached_rel(ctx[:umbrella], "0.0.1")
