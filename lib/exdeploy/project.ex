@@ -23,6 +23,19 @@ defmodule Exdeploy.Project do
     end
   end
 
+  def app(project, app_name) do
+    if umbrella?(project) do
+      apps(project) |> Enum.find(fn(app) -> app.name == app_name end)
+    else
+      [app] = apps(project)
+      if app.name == app_name do
+        app
+      else
+        nil
+      end
+    end
+  end
+
   def umbrella_apps_path(%Project{build_path: path}) do
     "#{path}/apps"
   end
@@ -65,9 +78,16 @@ defmodule Exdeploy.Project do
   end
 
   def deploy(project, options) when is_list(options) do
-    Enum.each apps(project), fn(app) ->
+    apps_to_deploy = if options[:app] do
+      [app(project, options[:app])]
+    else
+      apps(project)
+    end
+    Enum.each apps_to_deploy, fn(app) ->
       release = App.latest_release(app)
       cond do
+        release == nil ->
+          Logger.error "#{app.name}: No releases found, can't install. Have you built it yet?"
         App.never_deployed?(app) ->
           release |> Release.install(options)
         App.latest_version(app) > App.current_version(app) ->
@@ -95,7 +115,12 @@ defmodule Exdeploy.Project do
     if is_binary(project) do
       Project.new(project) |> build(options)
     else
-      apps(project) |> Enum.map(&App.full_build(&1, options))
+      apps_to_build = if options[:app] do
+        [app(project, options[:app])]
+      else
+        apps(project)
+      end
+      apps_to_build |> Enum.map(&App.full_build(&1, options))
     end
   end
 
