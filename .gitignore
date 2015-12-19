@@ -7,3 +7,5 @@ cached_rel
 test_projects/deploy/sub_project1*
 test_projects/deploy/sub_project2*
 test_projects/deploy/normal_project*
+test_projects/build/normal_project/rel
+test_projects/build/umbrella_project//rel
