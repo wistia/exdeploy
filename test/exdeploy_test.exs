@@ -77,6 +77,7 @@ defmodule ExdeployTest do
     assert App.deployed?(app3) == false
   end
 
+  @tag :build
   test "builds a normal project", ctx do
     [app] = Project.apps(ctx[:normal])
     assert File.exists?("#{app.path}/rel/normal_project/releases/0.0.1/normal_project.tar.gz") == false
@@ -84,6 +85,7 @@ defmodule ExdeployTest do
     assert File.exists?("#{app.path}/rel/normal_project/releases/0.0.1/normal_project.tar.gz") == true
   end
 
+  @tag :build
   test "builds an umbrella project", ctx do
     [app1, app2] = Project.apps(ctx[:umbrella])
     assert File.exists?("#{app1.path}/rel/sub_project1/releases/0.0.1/sub_project1.tar.gz") == false
@@ -146,6 +148,7 @@ defmodule ExdeployTest do
     assert rel4.app.name == "sub_project2"
   end
 
+  @tag :deploy
   test "normal: first deploy starts app, second deploy upgrades", ctx do
     include_cached_rel(ctx[:normal], "0.0.1")
 
@@ -173,6 +176,7 @@ defmodule ExdeployTest do
     assert App.running_version(app) == "0.0.2"
   end
 
+  @tag :deploy
   test "umbrella: first deploy starts app, second deploy upgrades", ctx do
     include_cached_rel(ctx[:umbrella], "0.0.1")
 
