@@ -138,10 +138,10 @@ defmodule Exdeploy.App do
     app |> bin("ping")
   end
 
-  def bin(app, cmd) do
+  def bin(app, cmd, options \\ []) do
     if deployed?(app) do
       if release = App.current_release(app) do
-        release |> Release.bin(cmd)
+        release |> Release.bin(cmd, options)
       else
         Logger.warn "#{app.name}: No releases available, skipping cmd #{cmd}"
       end

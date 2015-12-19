@@ -61,28 +61,42 @@ defmodule Exdeploy.Project do
   end
 
   def deploy(project) do
+    deploy(project, [])
+  end
+
+  def deploy(project, options) when is_list(options) do
     Enum.each apps(project), fn(app) ->
+      release = App.latest_release(app)
       cond do
         App.never_deployed?(app) ->
-          App.latest_release(app) |> Release.install
+          release |> Release.install(options)
         App.latest_version(app) > App.current_version(app) ->
-          App.latest_release(app) |> Release.upgrade
+          if App.running?(app) do
+            release |> Release.upgrade(options)
+          else
+            release |> Release.install(options)
+          end
         true ->
-          Logger.warn "#{app.name}: No version change, skipping"
+          Logger.warn "#{app.name}: No version change, nothing to deploy"
       end
+      App.start(app)
     end
   end
 
-  def deploy(build_path, deploy_path) do
-    Project.new(build_path, deploy_path) |> deploy
+  def deploy(build_path, deploy_path) when is_binary(deploy_path) do
+    deploy(build_path, deploy_path, [])
   end
 
-  def build(project = %Project{}) do
-    apps(project) |> Enum.map(&App.full_build/1)
+  def deploy(build_path, deploy_path, options) do
+    Project.new(build_path, deploy_path) |> deploy(options)
   end
 
-  def build(build_path) do
-    Project.new(build_path) |> build
+  def build(project, options) do
+    if is_binary(project) do
+      Project.new(project) |> build(options)
+    else
+      apps(project) |> Enum.map(&App.full_build(&1, options))
+    end
   end
 
   def clean_rel(project) do

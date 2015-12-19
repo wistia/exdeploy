@@ -32,7 +32,7 @@ defmodule Exdeploy.Release do
     version
   end
 
-  def install(release) do
+  def install(release, options \\ []) do
     if App.current_version(release.app) == nil do
       Logger.info "#{release.app.name}: Installing a brand new app, starting at version #{release.version}"
       File.mkdir_p(release.app.deploy_path)
@@ -40,7 +40,7 @@ defmodule Exdeploy.Release do
       Logger.info "cd #{release.app.deploy_path} && tar -xf #{release.tarball}"
       result = System.cmd("tar", ~w[-xf #{release.tarball}], cd: release.app.deploy_path)
       Logger.debug inspect(result)
-      release |> bin "start"
+      release |> bin("start", user: options[:user])
     else
       raise "Can't install #{inspect release};
       Version #{inspect App.current_version(release.app)} is already deployed.
@@ -48,7 +48,7 @@ defmodule Exdeploy.Release do
     end
   end
 
-  def upgrade(release) do
+  def upgrade(release, options \\ []) do
     if App.current_version(release.app) == nil do
       raise "Can't upgrade #{inspect release};
       No version has been deployed yet. Try using install instead."
@@ -56,14 +56,18 @@ defmodule Exdeploy.Release do
       Logger.info "#{release.app.name}: Upgrading from #{App.current_version(release.app)} to #{release.version}"
       File.mkdir_p(release.release_dir)
       File.cp(release.tarball, "#{release.release_dir}/#{release.app.name}.tar.gz")
-      release |> bin "upgrade #{release.version}"
+      release |> bin("upgrade #{release.version}", user: options[:user])
     end
   end
 
-  def bin(release, cmd) do
-    bin = "#{release.app.deploy_path}/bin/#{release.app.name}"
-    args = String.split(cmd, " ")
-    Logger.info "#{bin} #{cmd}"
+  def bin(release, cmd, options \\ []) do
+    prefix = if options[:user] do
+      "sudo -Hu #{options[:user]} #{release.app.deploy_path}/bin/#{release.app.name}"
+    else
+      "#{release.app.deploy_path}/bin/#{release.app.name}"
+    end
+    [bin | args] = String.split(prefix, " ") ++ String.split(cmd, " ")
+    Logger.info bin <> " " <> Enum.join(args, " ")
     result = System.cmd(bin, args, cd: release.app.deploy_path)
     Logger.debug inspect(result)
     result
