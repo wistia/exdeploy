@@ -15,7 +15,7 @@ defmodule Exdeploy.App do
     mix app, "release"
   end
 
-  def full_build(app) do
+  def full_build(app, options \\ []) do
     install_hex(app)
     install_rebar(app)
     deps_get(app)
@@ -106,12 +106,12 @@ defmodule Exdeploy.App do
     !!current_version(app)
   end
 
-  def running?(app) do
-    App.current_release(app) |> Release.running?
+  def running?(app, options \\ []) do
+    App.current_release(app) |> Release.running?(options)
   end
 
-  def running_version(app) do
-    case ping(app) do
+  def running_version(app, options \\ []) do
+    case ping(app, options) do
       {text, 0} ->
         [line1 | _] = String.split(text, "\n")
         regex = Regex.compile!("#{app.deploy_path}/releases/(\\d+\\.\\d+\\.\\d+)/#{app.name}")
@@ -122,20 +122,20 @@ defmodule Exdeploy.App do
     end
   end
 
-  def start(app) do
-    app |> bin("start")
+  def start(app, options \\ []) do
+    app |> bin("start", options)
   end
 
-  def stop(app) do
-    app |> bin("stop")
+  def stop(app, options \\ []) do
+    app |> bin("stop", options)
   end
 
-  def restart(app) do
-    app |> bin("restart")
+  def restart(app, options \\ []) do
+    app |> bin("restart", options)
   end
 
-  def ping(app) do
-    app |> bin("ping")
+  def ping(app, options \\ []) do
+    app |> bin("ping", options)
   end
 
   def bin(app, cmd, options \\ []) do

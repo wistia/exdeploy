@@ -71,7 +71,7 @@ defmodule Exdeploy.Project do
         App.never_deployed?(app) ->
           release |> Release.install(options)
         App.latest_version(app) > App.current_version(app) ->
-          if App.running?(app) do
+          if App.running?(app, options) do
             release |> Release.upgrade(options)
           else
             release |> Release.install(options)
@@ -79,7 +79,7 @@ defmodule Exdeploy.Project do
         true ->
           Logger.warn "#{app.name}: No version change, nothing to deploy"
       end
-      App.start(app)
+      App.start(app, options)
     end
   end
 
@@ -91,7 +91,7 @@ defmodule Exdeploy.Project do
     Project.new(build_path, deploy_path) |> deploy(options)
   end
 
-  def build(project, options) do
+  def build(project, options \\ []) do
     if is_binary(project) do
       Project.new(project) |> build(options)
     else

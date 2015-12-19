@@ -83,9 +83,9 @@ defmodule Exdeploy.Release do
     end
   end
 
-  def running?(release) do
+  def running?(release, options \\ []) do
     if release do
-      App.running_version(release.app) == release.version
+      App.running_version(release.app, options) == release.version
     else
       false
     end
