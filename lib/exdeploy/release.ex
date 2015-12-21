@@ -33,7 +33,11 @@ defmodule Exdeploy.Release do
   end
 
   def install(release, options \\ []) do
-    if App.current_version(release.app) == nil do
+    if App.running?(release.app) do
+      raise "Can't install #{inspect release};
+      App version #{inspect App.current_version(release.app)} is already
+      running. Try using upgrade or downgrade instead."
+    else
       Logger.info "#{release.app.name}: Installing a brand new app, starting at version #{release.version}"
       File.mkdir_p(release.app.deploy_path)
       File.cp(release.tarball, "#{release.app.project.deploy_path}/#{release.app.name}.tar.gz")
@@ -41,10 +45,6 @@ defmodule Exdeploy.Release do
       result = System.cmd("tar", ~w[-xf #{release.tarball}], cd: release.app.deploy_path)
       Logger.debug inspect(result)
       release |> bin("start", user: options[:user])
-    else
-      raise "Can't install #{inspect release};
-      Version #{inspect App.current_version(release.app)} is already deployed.
-      Try using upgrade or downgrade instead."
     end
   end
 
