@@ -44,6 +44,9 @@ defmodule Exdeploy.Release do
       Logger.info "cd #{release.app.deploy_path} && tar -xf #{release.tarball}"
       result = System.cmd("tar", ~w[-xf #{release.tarball}], cd: release.app.deploy_path)
       Logger.debug inspect(result)
+      if options[:user] do
+        System.cmd("chown", ~w[-R #{options[:user]} "#{release.app.deploy_path}"])
+      end
       release |> bin("start", user: options[:user])
     end
   end
@@ -56,6 +59,9 @@ defmodule Exdeploy.Release do
       Logger.info "#{release.app.name}: Upgrading from #{App.current_version(release.app)} to #{release.version}"
       File.mkdir_p(release.release_dir)
       File.cp(release.tarball, "#{release.release_dir}/#{release.app.name}.tar.gz")
+      if options[:user] do
+        System.cmd("chown", ~w[-R #{options[:user]} "#{release.release_dir}"])
+      end
       release |> bin("upgrade #{release.version}", user: options[:user])
     end
   end
