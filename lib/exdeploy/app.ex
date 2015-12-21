@@ -111,14 +111,20 @@ defmodule Exdeploy.App do
   end
 
   def running_version(app, options \\ []) do
-    case ping(app, options) do
-      {text, 0} ->
-        [line1 | _] = String.split(text, "\n")
-        regex = Regex.compile!("#{app.deploy_path}/releases/(\\d+\\.\\d+\\.\\d+)/#{app.name}")
-        [_, version] = Regex.run(regex, line1)
-        version
-      _else ->
-        nil
+    try do
+      case ping(app, options) do
+        {text, 0} ->
+          [line1 | _] = String.split(text, "\n")
+          regex = Regex.compile!("#{app.deploy_path}/releases/(\\d+\\.\\d+\\.\\d+)/#{app.name}")
+          [_, version] = Regex.run(regex, line1)
+          version
+        _else ->
+          nil
+      end
+    catch
+      :eaccess ->
+        Logger.error "#{app.name} has been deployed but isn't running."
+        false
     end
   end
 
