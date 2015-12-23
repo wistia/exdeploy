@@ -31,24 +31,33 @@ read this from the `mix.exs` file, and will probably do that in the future.
 It's expected that you `git clone` this repo onto a box which has Elixir
 installed.
 
-Get exdeploy:
+### Get exdeploy:
 
     git clone https://github.com/wistia/exdeploy.git
     cd exdeploy
 
-To make a release:
+### To make a release:
 
-    mix run -e "Exdeploy.build(\"project_name\", \"/my/project/path\")"
+    mix run -e "Exdeploy.build(\"project_name\", \"/my/project/path\", user: \"the_user\", group: \"the_group\")"
 
 This will install hex and rebar, fetch deps, compile and make a release with
-`MIX_ENV=prod`.
+`MIX_ENV=prod`. The executing user must have read/write access to
+`/my/project/path`. After running, if `user` and/or `group` options are
+specified, the owner and group of the build folder will be changed to match.
 
-To upgrade to the latest release:
+### To upgrade to the latest release:
 
-    mix run -e "Exdeploy.deploy(\"project_name\", \"/my/project/path\", \"/the/deploy/path\")"
+    mix run -e "Exdeploy.deploy(\"project_name\", \"/my/project/path\", \"/the/deploy/path\", user: \"the_user\", group: \"the_group\", app: \"the_app_name\")"
 
-This assumes `/my/project/path` has a `rel` folder created by exrm. If it's
-an umbrella project, then the `rel` folders should exist in the sub-projects.
+This will find the latest version of the given app in your project, find the
+latest exrm release, move it to the deploy location, and issue an upgrade
+command. If no app is specified, then all apps (in an umbrella project) will be
+deployed sequentially.
+
+The executing user must have read access to /my/project/path and write access
+to /the/deploy/path. When the `user` and/or `group` options are specified,
+the owner and group of the deployment release folder will be changed to match,
+and any ping/upgrade/start commands will be issued as `user`.
 
 ## Running tests
 
