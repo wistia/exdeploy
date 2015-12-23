@@ -47,6 +47,9 @@ defmodule Exdeploy.Release do
       if options[:user] do
         System.cmd("chown", ~w[-R #{options[:user]} #{release.app.deploy_path}])
       end
+      if options[:group] do
+        System.cmd("chgrp", ~w[-R #{options[:group]} #{release.app.deploy_path}])
+      end
       release |> bin("start", user: options[:user])
     end
   end
@@ -61,6 +64,9 @@ defmodule Exdeploy.Release do
       File.cp(release.tarball, "#{release.release_dir}/#{release.app.name}.tar.gz")
       if options[:user] do
         System.cmd("chown", ~w[-R #{options[:user]} #{release.release_dir}])
+      end
+      if options[:group] do
+        System.cmd("chgrp", ~w[-R #{options[:group]} #{release.release_dir}])
       end
       release |> bin("upgrade #{release.version}", user: options[:user])
     end
