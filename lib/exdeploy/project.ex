@@ -28,11 +28,7 @@ defmodule Exdeploy.Project do
       apps(project) |> Enum.find(fn(app) -> app.name == app_name end)
     else
       [app] = apps(project)
-      if app.name == app_name do
-        app
-      else
-        nil
-      end
+      app
     end
   end
 
