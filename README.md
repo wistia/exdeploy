@@ -38,14 +38,14 @@ Get exdeploy:
 
 To make a release:
 
-    mix run -e "Exdeploy.build(\"/my/project/path\")"
+    mix run -e "Exdeploy.build(\"project_name\", \"/my/project/path\")"
 
 This will install hex and rebar, fetch deps, compile and make a release with
 `MIX_ENV=prod`.
 
 To upgrade to the latest release:
 
-    mix run -e "Exdeploy.deploy(\"/my/project/path\", \"/the/deploy/path\")"
+    mix run -e "Exdeploy.deploy(\"project_name\", \"/my/project/path\", \"/the/deploy/path\")"
 
 This assumes `/my/project/path` has a `rel` folder created by exrm. If it's
 an umbrella project, then the `rel` folders should exist in the sub-projects.

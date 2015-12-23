@@ -42,8 +42,8 @@ defmodule ExdeployTest do
     test_proj_dir = "#{System.cwd}/test_projects"
     clear_deploy_folder(test_proj_dir)
 
-    umbrella = Project.new("#{test_proj_dir}/build/umbrella_project", "#{test_proj_dir}/deploy")
-    normal = Project.new("#{test_proj_dir}/build/normal_project", "#{test_proj_dir}/deploy", "normal_project")
+    umbrella = Project.new("umbrella_project", "#{test_proj_dir}/build/umbrella_project", "#{test_proj_dir}/deploy")
+    normal = Project.new("normal_project", "#{test_proj_dir}/build/normal_project", "#{test_proj_dir}/deploy")
 
     reset_project_build(umbrella)
     reset_project_build(normal)

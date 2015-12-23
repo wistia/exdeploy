@@ -22,13 +22,13 @@ defmodule Exdeploy do
   In non-umbrella projects, the project name will be the same as the app name.
   """
 
-  def build(path, options \\ []) do
+  def build(project_name, path, options \\ []) do
     Logger.configure(level: options[:log_level] || :info)
-    Exdeploy.Project.build(path, options)
+    Exdeploy.Project.build(project_name, path, options)
   end
 
-  def deploy(build_path, deploy_path, options \\ []) do
+  def deploy(project_name, build_path, deploy_path, options \\ []) do
     Logger.configure(level: options[:log_level] || :info)
-    Exdeploy.Project.deploy(build_path, deploy_path, options)
+    Exdeploy.Project.deploy(project_name, build_path, deploy_path, options)
   end
 end

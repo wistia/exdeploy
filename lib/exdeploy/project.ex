@@ -6,7 +6,7 @@ defmodule Exdeploy.Project do
 
   defstruct [build_path: nil, deploy_path: nil, name: nil]
 
-  def new(build_path, deploy_path \\ nil, name \\ nil) do
+  def new(name, build_path, deploy_path \\ nil) do
     build_path = Path.expand(build_path)
     if deploy_path, do: deploy_path = Path.expand(deploy_path)
     %Project{
@@ -106,25 +106,29 @@ defmodule Exdeploy.Project do
     end
   end
 
-  def deploy(build_path, deploy_path) when is_binary(deploy_path) do
-    deploy(build_path, deploy_path, [])
+  def deploy(project_name, build_path, deploy_path) when is_binary(project_name) do
+    deploy(project_name, build_path, deploy_path, [])
   end
 
-  def deploy(build_path, deploy_path, options) do
-    Project.new(build_path, deploy_path, options[:name]) |> deploy(options)
+  def deploy(project_name, build_path, deploy_path, options) do
+    Project.new(project_name, build_path, deploy_path) |> deploy(options)
+  end
+
+  def build(project_name, build_path, options) do
+    Project.new(project_name, build_path) |> build(options)
+  end
+
+  def build(project_name, build_path) when is_binary(project_name) do
+    build(project_name, build_path, [])
   end
 
   def build(project, options \\ []) do
-    if is_binary(project) do
-      Project.new(project) |> build(options)
+    apps_to_build = if options[:app] do
+      [app(project, options[:app])]
     else
-      apps_to_build = if options[:app] do
-        [app(project, options[:app])]
-      else
-        apps(project)
-      end
-      apps_to_build |> Enum.map(&App.full_build(&1, options))
+      apps(project)
     end
+    apps_to_build |> Enum.map(&App.full_build(&1, options))
   end
 
   def clean_rel(project) do
