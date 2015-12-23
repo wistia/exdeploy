@@ -23,10 +23,12 @@ defmodule Exdeploy do
   """
 
   def build(path, options \\ []) do
+    Logger.configure(level: options[:log_level] || :info)
     Exdeploy.Project.build(path, options)
   end
 
   def deploy(build_path, deploy_path, options \\ []) do
+    Logger.configure(level: options[:log_level] || :info)
     Exdeploy.Project.deploy(build_path, deploy_path, options)
   end
 end
