@@ -4,14 +4,15 @@ defmodule Exdeploy.Project do
   alias Exdeploy.App
   alias Exdeploy.Release
 
-  defstruct [build_path: nil, deploy_path: nil]
+  defstruct [build_path: nil, deploy_path: nil, name: nil]
 
-  def new(build_path, deploy_path \\ nil) do
+  def new(build_path, deploy_path \\ nil, name \\ nil) do
     build_path = Path.expand(build_path)
     if deploy_path, do: deploy_path = Path.expand(deploy_path)
     %Project{
       build_path: build_path,
       deploy_path: deploy_path,
+      name: name,
     }
   end
 
@@ -28,7 +29,11 @@ defmodule Exdeploy.Project do
       apps(project) |> Enum.find(fn(app) -> app.name == app_name end)
     else
       [app] = apps(project)
-      app
+      if app.name == app_name do
+        app
+      else
+        nil
+      end
     end
   end
 
@@ -60,12 +65,11 @@ defmodule Exdeploy.Project do
 
   defp non_umbrella_app(project) do
     app_path = project.build_path
-    [app_name|_] = String.split(app_path, "/") |> Enum.reverse
     %App{
       path: app_path,
-      name: app_name,
+      name: project.name,
       project: project,
-      deploy_path: "#{project.deploy_path}/#{app_name}"
+      deploy_path: "#{project.deploy_path}/#{project.name}",
     }
   end
 
@@ -104,7 +108,7 @@ defmodule Exdeploy.Project do
   end
 
   def deploy(build_path, deploy_path, options) do
-    Project.new(build_path, deploy_path) |> deploy(options)
+    Project.new(build_path, deploy_path, options[:name]) |> deploy(options)
   end
 
   def build(project, options \\ []) do
