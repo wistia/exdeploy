@@ -78,6 +78,7 @@ defmodule ExdeployTest do
   end
 
   @tag :build
+  @tag timeout: 120_000
   test "builds a normal project", ctx do
     [app] = Project.apps(ctx[:normal])
     assert File.exists?("#{app.path}/rel/normal_project/releases/0.0.1/normal_project.tar.gz") == false
@@ -86,6 +87,7 @@ defmodule ExdeployTest do
   end
 
   @tag :build
+  @tag timeout: 120_000
   test "builds an umbrella project", ctx do
     [app1, app2] = Project.apps(ctx[:umbrella])
     assert File.exists?("#{app1.path}/rel/sub_project1/releases/0.0.1/sub_project1.tar.gz") == false
