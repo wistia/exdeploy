@@ -2,6 +2,7 @@ defmodule ExdeployTest do
   use ExUnit.Case
   alias Exdeploy.Project
   alias Exdeploy.App
+  require Logger
 
   doctest Exdeploy
 
@@ -101,8 +102,8 @@ defmodule ExdeployTest do
     [] = Project.releases(ctx[:umbrella])
     include_cached_rel(ctx[:umbrella], "0.0.1")
     [rel1, rel2] = Project.releases(ctx[:umbrella])
-    assert rel1.version == "0.0.1"
-    assert rel2.version == "0.0.1"
+    assert rel1.version == {0, 0, 1}
+    assert rel2.version == {0, 0, 1}
     assert App.deployed?(rel1.app) == false
     assert App.deployed?(rel2.app) == false
   end
@@ -111,7 +112,7 @@ defmodule ExdeployTest do
     [] = Project.releases(ctx[:normal])
     include_cached_rel(ctx[:normal], "0.0.1")
     [rel1] = Project.releases(ctx[:normal])
-    assert rel1.version == "0.0.1"
+    assert rel1.version == {0, 0, 1}
     assert App.deployed?(rel1.app) == false
   end
 
@@ -119,14 +120,14 @@ defmodule ExdeployTest do
     [] = Project.releases(ctx[:normal])
     include_cached_rel(ctx[:normal], "0.0.1")
     [rel1] = Project.releases(ctx[:normal])
-    assert rel1.version == "0.0.1"
+    assert rel1.version == {0, 0, 1}
 
     use_mix_exs_version(ctx[:normal], "0.0.2")
     include_cached_rel(ctx[:normal], "0.0.2")
     [rel1, rel2] = Project.releases(ctx[:normal])
-    assert rel1.version == "0.0.1"
+    assert rel1.version == {0, 0, 1}
     assert rel1.app.name == "normal_project"
-    assert rel2.version == "0.0.2"
+    assert rel2.version == {0, 0, 2}
     assert rel2.app.name == "normal_project"
   end
 
@@ -134,19 +135,19 @@ defmodule ExdeployTest do
     [] = Project.releases(ctx[:umbrella])
     include_cached_rel(ctx[:umbrella], "0.0.1")
     [rel1, rel2] = Project.releases(ctx[:umbrella])
-    assert rel1.version == "0.0.1"
-    assert rel2.version == "0.0.1"
+    assert rel1.version == {0, 0, 1}
+    assert rel2.version == {0, 0, 1}
 
     use_mix_exs_version(ctx[:umbrella], "0.0.2")
     include_cached_rel(ctx[:umbrella], "0.0.2")
     [rel1, rel2, rel3, rel4] = Project.releases(ctx[:umbrella])
-    assert rel1.version == "0.0.1"
+    assert rel1.version == {0, 0, 1}
     assert rel1.app.name == "sub_project1"
-    assert rel2.version == "0.0.2"
+    assert rel2.version == {0, 0, 2}
     assert rel2.app.name == "sub_project1"
-    assert rel3.version == "0.0.1"
+    assert rel3.version == {0, 0, 1}
     assert rel3.app.name == "sub_project2"
-    assert rel4.version == "0.0.2"
+    assert rel4.version == {0, 0, 2}
     assert rel4.app.name == "sub_project2"
   end
 
@@ -161,12 +162,12 @@ defmodule ExdeployTest do
     Project.deploy(ctx[:normal])
     assert App.deployed?(app) == true
     assert App.running?(app) == true
-    assert App.running_version(app) == "0.0.1"
+    assert App.running_version(app) == {0, 0, 1}
 
     Project.deploy(ctx[:normal])
     assert App.deployed?(app) == true
     assert App.running?(app) == true
-    assert App.running_version(app) == "0.0.1"
+    assert App.running_version(app) == {0, 0, 1}
 
     # build another version - we'll upgrade to it.
     use_mix_exs_version(ctx[:normal], "0.0.2")
@@ -175,7 +176,7 @@ defmodule ExdeployTest do
     Project.deploy(ctx[:normal])
     assert App.deployed?(app) == true
     assert App.running?(app) == true
-    assert App.running_version(app) == "0.0.2"
+    assert App.running_version(app) == {0, 0, 2}
   end
 
   @tag :deploy
@@ -193,16 +194,16 @@ defmodule ExdeployTest do
     assert App.deployed?(app2) == true
     assert App.running?(app1) == true
     assert App.running?(app2) == true
-    assert App.running_version(app1) == "0.0.1"
-    assert App.running_version(app2) == "0.0.1"
+    assert App.running_version(app1) == {0, 0, 1}
+    assert App.running_version(app2) == {0, 0, 1}
 
     Project.deploy(ctx[:umbrella])
     assert App.deployed?(app1) == true
     assert App.deployed?(app2) == true
     assert App.running?(app1) == true
     assert App.running?(app2) == true
-    assert App.running_version(app1) == "0.0.1"
-    assert App.running_version(app2) == "0.0.1"
+    assert App.running_version(app1) == {0, 0, 1}
+    assert App.running_version(app2) == {0, 0, 1}
 
     # build another version - we'll upgrade to it.
     use_mix_exs_version(ctx[:umbrella], "0.0.2")
@@ -213,7 +214,7 @@ defmodule ExdeployTest do
     assert App.deployed?(app2) == true
     assert App.running?(app1) == true
     assert App.running?(app2) == true
-    assert App.running_version(app1) == "0.0.2"
-    assert App.running_version(app2) == "0.0.2"
+    assert App.running_version(app1) == {0, 0, 2}
+    assert App.running_version(app2) == {0, 0, 2}
   end
 end

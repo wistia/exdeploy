@@ -64,7 +64,7 @@ defmodule Exdeploy.App do
     case File.read("#{app.deploy_path}/releases/start_erl.data") do
       {:ok, content} ->
         [_, release] = String.split(content, " ")
-        release
+        Release.version_str_to_tuple(release)
       _else ->
         nil
     end
@@ -79,6 +79,10 @@ defmodule Exdeploy.App do
   end
 
   def release(app, version) do
+    if is_binary(version) do
+      version = Release.version_str_to_tuple(version)
+    end
+
     releases(app)
     |> Enum.find(fn(release) -> version == release.version end)
   end
@@ -90,9 +94,7 @@ defmodule Exdeploy.App do
   def versions(app) do
     Release.paths_for_app(app)
     |> Enum.map(&Release.version_from_path(&1))
-    |> Enum.sort(fn(lhs, rhs) ->
-      version_str_to_tuple(lhs) < version_str_to_tuple(rhs)
-    end)
+    |> Enum.sort
   end
 
   def releases(app) do
@@ -118,7 +120,7 @@ defmodule Exdeploy.App do
           [line1 | _] = String.split(text, "\n")
           regex = Regex.compile!("#{app.deploy_path}/releases/(\\d+\\.\\d+\\.\\d+)/#{app.name}")
           [_, version] = Regex.run(regex, line1)
-          version
+          Release.version_str_to_tuple(version)
         _else ->
           nil
       end
@@ -155,13 +157,5 @@ defmodule Exdeploy.App do
     else
       Logger.warn "App #{app.name} has never been deployed. Skipping command #{cmd}"
     end
-  end
-
-  def version_str_to_tuple(version) do
-    [major, minor, sub] = String.split(version, ".")
-    {major, _} = Integer.parse(major)
-    {minor, _} = Integer.parse(minor)
-    {sub, _} = Integer.parse(sub)
-    {major, minor, sub}
   end
 end

@@ -12,6 +12,10 @@ defmodule Exdeploy.Release do
   ]
 
   def new(app, version) do
+    if is_binary(version) do
+      version = version_str_to_tuple(version)
+    end
+
     %Release{
       app: app,
       version: version,
@@ -29,7 +33,7 @@ defmodule Exdeploy.Release do
 
   def version_from_path(path) do
     [version | _] = String.split(path, "/") |> Enum.reverse
-    version
+    version |> version_str_to_tuple
   end
 
   def install(release, options \\ []) do
@@ -38,7 +42,7 @@ defmodule Exdeploy.Release do
       App version #{inspect App.current_version(release.app)} is already
       running. Try using upgrade or downgrade instead."
     else
-      Logger.info "#{release.app.name}: Installing a brand new app, starting at version #{release.version}"
+      Logger.info "#{release.app.name}: Installing a brand new app, starting at version #{inspect release.version}"
       File.mkdir_p(release.app.deploy_path)
       File.cp(release.tarball, "#{release.app.project.deploy_path}/#{release.app.name}.tar.gz")
       Logger.info "cd #{release.app.deploy_path} && tar -xf #{release.tarball}"
@@ -59,7 +63,7 @@ defmodule Exdeploy.Release do
       raise "Can't upgrade #{inspect release};
       No version has been deployed yet. Try using install instead."
     else
-      Logger.info "#{release.app.name}: Upgrading from #{App.current_version(release.app)} to #{release.version}"
+      Logger.info "#{release.app.name}: Upgrading from #{inspect App.current_version(release.app)} to #{inspect release.version}"
       File.mkdir_p(release.release_dir)
       File.cp(release.tarball, "#{release.release_dir}/#{release.app.name}.tar.gz")
       if options[:user] do
@@ -68,7 +72,7 @@ defmodule Exdeploy.Release do
       if options[:group] do
         System.cmd("chgrp", ~w[-R #{options[:group]} #{release.release_dir}])
       end
-      release |> bin("upgrade #{release.version}", user: options[:user])
+      release |> bin("upgrade #{version_tuple_to_str(release.version)}", user: options[:user])
     end
   end
 
@@ -103,16 +107,28 @@ defmodule Exdeploy.Release do
     end
   end
 
+  def version_str_to_tuple(version) do
+    [major, minor, sub] = String.split(version, ".")
+    {major, _} = Integer.parse(major)
+    {minor, _} = Integer.parse(minor)
+    {sub, _} = Integer.parse(sub)
+    {major, minor, sub}
+  end
+
+  def version_tuple_to_str({major, minor, sub}) do
+    "#{major}.#{minor}.#{sub}"
+  end
+
   defp extracted?(release_dir) do
     File.dir?(release_dir)
   end
 
   defp path(app, version) do
-    "#{app.path}/rel/#{app.name}/releases/#{version}"
+    "#{app.path}/rel/#{app.name}/releases/#{version_tuple_to_str(version)}"
   end
 
   defp release_dir(app, version) do
-    "#{app.deploy_path}/releases/#{version}"
+    "#{app.deploy_path}/releases/#{version_tuple_to_str(version)}"
   end
 
   defp tarball(app, version) do
