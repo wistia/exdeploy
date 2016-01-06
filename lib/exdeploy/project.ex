@@ -100,7 +100,7 @@ defmodule Exdeploy.Project do
           Logger.warn "#{app.name}: No version change, nothing to deploy"
       end
 
-      unless App.running?(app) do
+      unless App.running?(app, options) do
         App.start(app, options)
       end
     end

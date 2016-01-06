@@ -1,6 +1,5 @@
 defmodule Exdeploy.App do
   require Logger
-  alias Exdeploy.Project
   alias Exdeploy.Release
   alias Exdeploy.App
 
@@ -15,7 +14,7 @@ defmodule Exdeploy.App do
     mix app, "release"
   end
 
-  def full_build(app, options \\ []) do
+  def full_build(app, _options) do
     install_hex(app)
     install_rebar(app)
     deps_get(app)
