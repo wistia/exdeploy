@@ -90,7 +90,9 @@ defmodule Exdeploy.App do
   def versions(app) do
     Release.paths_for_app(app)
     |> Enum.map(&Release.version_from_path(&1))
-    |> Enum.sort
+    |> Enum.sort(fn(lhs, rhs) ->
+      version_str_to_tuple(lhs) < version_str_to_tuple(rhs)
+    end)
   end
 
   def releases(app) do
@@ -153,5 +155,13 @@ defmodule Exdeploy.App do
     else
       Logger.warn "App #{app.name} has never been deployed. Skipping command #{cmd}"
     end
+  end
+
+  def version_str_to_tuple(version) do
+    [major, minor, sub] = String.split(version, ".")
+    {major, _} = Integer.parse(major)
+    {minor, _} = Integer.parse(minor)
+    {sub, _} = Integer.parse(sub)
+    {major, minor, sub}
   end
 end
