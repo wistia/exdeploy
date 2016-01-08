@@ -18,12 +18,17 @@ defmodule Exdeploy.App do
     install_hex(app)
     install_rebar(app)
     deps_get(app)
+    deps_update_all(app)
     compile(app)
     build(app)
   end
 
   def deps_get(app) do
     mix app, "deps.get"
+  end
+
+  def deps_update_all(app) do
+    mix app, "deps.update --all"
   end
 
   def compile(app) do
