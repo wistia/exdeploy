@@ -78,13 +78,13 @@ defmodule Exdeploy.Release do
 
   def bin(release, cmd, options \\ []) do
     prefix = if options[:user] do
-      "sudo -Hu #{options[:user]} bash -c \"#{options[:env]} #{release.app.deploy_path}/bin/#{release.app.name}\""
+      "sudo -Hu #{options[:user]} #{release.app.deploy_path}/bin/#{release.app.name}"
     else
       "#{release.app.deploy_path}/bin/#{release.app.name}"
     end
     [bin | args] = String.split(prefix, " ") ++ String.split(cmd, " ")
     Logger.info bin <> " " <> Enum.join(args, " ")
-    result = System.cmd(bin, args, cd: release.app.deploy_path)
+    result = System.cmd(bin, args, cd: release.app.deploy_path, env: options[:env] || [])
     Logger.debug inspect(result)
     result
   end
