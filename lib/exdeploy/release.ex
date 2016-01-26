@@ -54,7 +54,7 @@ defmodule Exdeploy.Release do
       if options[:group] do
         System.cmd("chgrp", ~w[-R #{options[:group]} #{release.app.deploy_path}])
       end
-      release |> bin("start", user: options[:user])
+      release |> bin("start", user: options[:user], env: options[:env])
     end
   end
 
@@ -72,13 +72,13 @@ defmodule Exdeploy.Release do
       if options[:group] do
         System.cmd("chgrp", ~w[-R #{options[:group]} #{release.release_dir}])
       end
-      release |> bin("upgrade #{version_tuple_to_str(release.version)}", user: options[:user])
+      release |> bin("upgrade #{version_tuple_to_str(release.version)}", user: options[:user], env: options[:env])
     end
   end
 
   def bin(release, cmd, options \\ []) do
     prefix = if options[:user] do
-      "sudo -Hu #{options[:user]} #{release.app.deploy_path}/bin/#{release.app.name}"
+      "sudo -Hu #{options[:user]} bash -c \"#{options[:env]} #{release.app.deploy_path}/bin/#{release.app.name}\""
     else
       "#{release.app.deploy_path}/bin/#{release.app.name}"
     end

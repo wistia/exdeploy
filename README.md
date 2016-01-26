@@ -47,7 +47,7 @@ specified, the owner and group of the build folder will be changed to match.
 
 ### To upgrade to the latest release:
 
-    mix run -e "Exdeploy.deploy(\"project_name\", \"/my/project/path\", \"/the/deploy/path\", user: \"the_user\", group: \"the_group\", app: \"the_app_name\")"
+    mix run -e "Exdeploy.deploy(\"project_name\", \"/my/project/path\", \"/the/deploy/path\", user: \"the_user\", group: \"the_group\", app: \"the_app_name\", env: \"RUN_ERL_LOG_MAXSIZE=RUN_ERL_LOG_MAXSIZE RUN_ERL_LOG_GENERATIONS=4\")"
 
 This will find the latest version of the given app in your project, find the
 latest exrm release, move it to the deploy location, and issue an upgrade
