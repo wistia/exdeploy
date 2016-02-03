@@ -41,7 +41,8 @@ installed.
     mix run -e "Exdeploy.build(\"project_name\", \"/my/project/path\", user: \"the_user\", group: \"the_group\")"
 
 This will install hex and rebar, fetch deps, compile and make a release with
-`MIX_ENV=prod`. The executing user must have read/write access to
+`MIX_ENV=prod`. If you want to build for another environment, for instance `staging`, set `BUILD_ENV=staging`.
+The executing user must have read/write access to
 `/my/project/path`. After running, if `user` and/or `group` options are
 specified, the owner and group of the build folder will be changed to match.
 
